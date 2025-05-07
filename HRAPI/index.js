@@ -15,9 +15,22 @@ app.get('/',async(req,res)=>{
     }
 });
 
-app.get('/country',async(req,res)=>{
+app.get('/department',async(req,res)=>{
     try{
-        const result = await pool.query('select e.employee_id, e.first_name, e.last_name, j.job_title, d.department_name, l.location_id, l.city from employees e join jobs j on e.job_id = j.job_id join departments d on e.department_id = d.department_id join locations l on d.location_id = l.location_id');
+        const result = await pool.query(`SELECT 
+    e.employee_id, 
+    CONCAT(e.first_name, ' ', e.last_name) AS employee_name, 
+    e.salary 
+  FROM employees e 
+  WHERE e.salary > (
+    SELECT AVG(salary) 
+    FROM employees 
+    WHERE department_id = e.department_id) 
+  AND e.department_id IN (
+    SELECT DISTINCT department_id 
+    FROM employees 
+    WHERE first_name LIKE '%J%')
+`);
         res.json(result.rows);
     }catch(err)
     {
