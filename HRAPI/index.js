@@ -15,22 +15,9 @@ app.get('/',async(req,res)=>{
     }
 });
 
-app.get('/department',async(req,res)=>{
+app.get('/country',async(req,res)=>{
     try{
-        const result = await pool.query(`SELECT 
-    e.employee_id, 
-    CONCAT(e.first_name, ' ', e.last_name) AS employee_name, 
-    e.salary 
-  FROM employees e 
-  WHERE e.salary > (
-    SELECT AVG(salary) 
-    FROM employees 
-    WHERE department_id = e.department_id) 
-  AND e.department_id IN (
-    SELECT DISTINCT department_id 
-    FROM employees 
-    WHERE first_name LIKE '%J%')
-`);
+        const result = await pool.query('select * from countries');
         res.json(result.rows);
     }catch(err)
     {
